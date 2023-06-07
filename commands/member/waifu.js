@@ -84,7 +84,7 @@ module.exports = {
 
         await interaction.editReply( {
             embeds: [ {
-                color: ( await Data.guildData( interaction.guild.id ) ).color,
+                color: ( await guildData( interaction.guild.id ) ).color,
                 author: {
                     name: `${interaction.user.tag}`,
                     icon_url: interaction.user.displayAvatarURL( { size: 4096, dynamic: true } )
