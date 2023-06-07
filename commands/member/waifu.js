@@ -30,8 +30,8 @@ module.exports = {
 
         const data = await userData( userId )
 
-        const canvas = Canvas.createCanvas( 1200, 1200 );
-        const ctx = canvas.getContext( '2d' );
+        const canvas = Canvas.createCanvas( 1200, 1200 )
+        const ctx = canvas.getContext( '2d' )
 
 		Canvas.GlobalFonts.registerFromPath( './fonts/PaytoneOne-Regular.ttf', 'default' )
 

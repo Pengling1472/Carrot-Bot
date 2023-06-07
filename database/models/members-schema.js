@@ -11,15 +11,6 @@ const reqDecimal = {
 
 const profileSchema = mongoose.Schema( {
     _id: reqString,
-    url: {
-        type: Object,
-        default: {
-			rank: {
-				type: String,
-				default: 'https://media.discordapp.net/attachments/772368099490922496/835032996360486972/Untitled.png?width=1362&height=454'
-			}
-		}
-    },
 	user: {
 		type: Object,
 		default: {

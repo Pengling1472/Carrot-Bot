@@ -1,5 +1,6 @@
 const fs = require( 'fs' )
-
+const { getUserRank } = require( './functions' )
+ 
 module.exports = {
 	name: 'ready',
 	once: true,

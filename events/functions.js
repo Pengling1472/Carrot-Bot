@@ -52,9 +52,6 @@ module.exports.userData = async userId => {
 			data = await membersSchema.create( {
 
 				_id: userId,
-				url: {
-					rank: 'https://media.discordapp.net/attachments/746415967235604524/932469321463136316/Unknown.png'
-				},
 				user: {
 					items: [],
 					coins: 50,
@@ -165,6 +162,55 @@ module.exports.saveGuildData = async ( {
 				}, { upsert: true } )
 
 		}
+	
+	} )
+
+}
+
+module.exports.saveUserData = async ( {
+	userId,
+	level,
+	coins,
+	xp
+} ) => {
+
+	return await mongo().then( async () => {
+
+		switch ( true ) {
+
+			case level != undefined: await membersSchema.findByIdAndUpdate( userId, {
+					$inc: {
+						"user.level": level
+					},
+					$set: {
+						"user.xp": xp
+					}
+				}, { upsert: true } ); break
+			case xp != undefined: await membersSchema.findByIdAndUpdate( userId, {
+					$inc: {
+						"user.xp": xp,
+						"user.score": xp
+					}
+				}, { upsert: true } ); break
+			case coins != undefined: await membersSchema.findByIdAndUpdate( userId, {
+					$inc: {
+						"user.coins": coins
+					}
+				}, { upsert: true } ); break
+
+		}
+	
+	} )
+
+}
+
+module.exports.getUserRank = async ( userId ) => {
+
+	return await mongo().then( async () => {
+
+		return ( await membersSchema.aggregate( [
+			{ '$sort': { 'user.score': -1 } },
+		] ) ).map( ( user, rank ) => { return { _id: user._id, rank: rank } } ).filter( user => user._id == userId )[ 0 ].rank + 1
 	
 	} )
 
