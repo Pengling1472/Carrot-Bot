@@ -8,7 +8,7 @@ module.exports = {
 	async execute( client, interaction ) {
 
         const data = await userData( interaction.user.id )
-        const items = data.user.items.map( item => item.amount + addSpace( item.amount > 9 ? ( item.amount > 99 ? ' ' : '  ' ) : '   ' ) + item.name + addSpace( 13 - item.name.length ) + '| Sell: $' + item.price ).join( '\n' )
+        const items = data.user.items.map( item => item.amount + addSpace( item.amount > 9 ? ( item.amount > 99 ? 1 : 2 ) : 3 ) + item.name + addSpace( 13 - item.name.length ) + '| Sell: $' + item.price ).join( '\n' )
 
         await interaction.reply( {
             embeds: [ {
