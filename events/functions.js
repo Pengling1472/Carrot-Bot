@@ -169,34 +169,61 @@ module.exports.saveGuildData = async ( {
 
 module.exports.saveUserData = async ( {
 	userId,
-	level,
+	items,
 	coins,
 	xp
 } ) => {
 
 	return await mongo().then( async () => {
 
-		switch ( true ) {
+		if ( coins != undefined ) return await membersSchema.findByIdAndUpdate( userId, {
+			$inc: {
+				"user.coins": coins
+			}
+		}, { upsert: true } )
 
-			case level != undefined: await membersSchema.findByIdAndUpdate( userId, {
-					$inc: {
-						"user.level": level
-					},
-					$set: {
-						"user.xp": xp
+		const data = await membersSchema.findById( userId )
+
+		if ( xp != undefined ) data.user.xp + xp >= data.user.level * data.user.level * 100 ?
+		await membersSchema.findByIdAndUpdate( userId, {
+			$inc: {
+				"user.level": 1,
+				"user.score": xp
+			},
+			$set: {
+				"user.xp": ( data.user.xp + xp ) - ( data.user.level * data.user.level * 100 )
+			}
+		}, { upsert: true } ) :
+		await membersSchema.findByIdAndUpdate( userId, {
+			$inc: {
+				"user.xp": xp,
+				"user.score": xp
+			}
+		}, { upsert: true } )
+
+		if ( items != undefined ) { for ( const item of data.user.items ) if ( item.id == items.id ) return await membersSchema.findOneAndUpdate( {
+				_id: userId,
+				"user.items": {
+					$elemMatch: {
+						id: items.id
 					}
-				}, { upsert: true } ); break
-			case xp != undefined: await membersSchema.findByIdAndUpdate( userId, {
-					$inc: {
-						"user.xp": xp,
-						"user.score": xp
+				}
+			}, {
+				$inc: {
+					"user.items.$.amount": items.amount
+				}
+			}, { upsert: true } )
+
+			await membersSchema.findByIdAndUpdate( userId, {
+				$push: {
+					"user.items": {
+						id: items.id,
+						name: items.name,
+						price: items.price,
+						amount: items.amount
 					}
-				}, { upsert: true } ); break
-			case coins != undefined: await membersSchema.findByIdAndUpdate( userId, {
-					$inc: {
-						"user.coins": coins
-					}
-				}, { upsert: true } ); break
+				}
+			}, { upsert: true } ) 
 
 		}
 	
