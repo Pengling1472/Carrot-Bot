@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require( '@discordjs/builders' )
-const { userData } = require( '../../events/functions' )
+const { userData, guildData } = require( '../../events/functions' )
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -12,6 +12,7 @@ module.exports = {
 
         await interaction.reply( {
             embeds: [ {
+                color: ( await guildData( interaction.guild.id ) ).color,
                 author: {
                     name: interaction.user.username,
                     icon_url: interaction.user.displayAvatarURL( { size: 4096, dynamic: true } )
