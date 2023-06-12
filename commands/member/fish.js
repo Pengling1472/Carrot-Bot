@@ -7,7 +7,7 @@ const Chance = require( 'chance' )
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName( 'fish' )
-		.setDescription('Catch a fish!')
+		.setDescription( 'Catch a fish!' )
 		.addStringOption( option =>
 			option.setName( 'options' )
 				.setDescription( 'Select a bait or check the leaderboard' )
