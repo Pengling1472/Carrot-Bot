@@ -21,7 +21,7 @@ module.exports = {
 				.setRequired( true )),
 	async execute(client, interaction, args) {
 
-		return
+		return interaction.deferUpdate()
 
 		await interaction.deferReply()
 
