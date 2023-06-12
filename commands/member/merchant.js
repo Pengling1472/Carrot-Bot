@@ -21,6 +21,8 @@ module.exports = {
 				.setRequired( true )),
 	async execute(client, interaction, args) {
 
+		return
+
 		await interaction.deferReply()
 
 		const shop = {
