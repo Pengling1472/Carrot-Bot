@@ -19,15 +19,15 @@ module.exports = {
 					{ name: 'Sell', value: 'sell' }
 				)
 				.setRequired( true )),
-	async execute(client, interaction, args) {
+	async execute( client, interaction, args ) {
 
-		return interaction.deferUpdate()
+		return
 
 		await interaction.deferReply()
 
 		const shop = {
 			amount: 1,
-			item: false
+			item: undefined
 		}
 
 		const filter = i => { i.deferUpdate(); return i.user.id == interaction.user.id }
@@ -41,7 +41,7 @@ module.exports = {
 
 		if ( interaction.options.getString( 'options' ) == 'buy' ) {
 
-			await interaction.editReply( buildEmbed( data.user, merchant, option, shop ) ).then( i => {
+			await interaction.editReply( buildEmbed( data.user, option, 'None' ) ).then( i => {
 
 				const buttonEvent = i.createMessageComponentCollector( { filter, time: 1000 * 60, componentType: ComponentType.Button } )
 				const dropdownEvent = i.createMessageComponentCollector( { filter, time: 1000 * 60, componentType: ComponentType.SelectMenu } )
@@ -60,6 +60,8 @@ module.exports = {
 							
 						// 	if ( shop.item.price * shop.amount > data.user.coins )
 					}
+
+					await interaction.editReply( buildEmbed( data.user, option, shop.item ?? 'None' ) )
 					
 					// if ( i.customId == 'button_4' ) return collector.stop()
 					// if ( i.customId == 'button_1' ) amount++
@@ -86,20 +88,22 @@ module.exports = {
 					dropdownEvent.resetTimer()
 					
 					shop.item = option == 'buy' ? merchant.items[ i.values ] : data.user.items.filter( item => item.name == i.values )[ 0 ]
-					interaction.editReply( buildEmbed( data.user, merchant, option, shop ) )
+					interaction.editReply( buildEmbed( data.user, option, shop.item ) )
 
 				} )
 
 				buttonEvent.on( 'end', collected => {
-					interaction.editReply( buildEmbed( data.user, merchant, option, shop, true ) )
+
+					interaction.editReply( buildEmbed( data.user, option, '', true ) )
 					dropdownEvent.stop()
+
 				} )
 
 			} )
 
 		}
 
-		function buildEmbed( user, merchant, option, shop, left = false ) {
+		function buildEmbed( user, option, text, left = false ) {
 			if ( left ) return {
 				embeds: [ {
 					author: {
@@ -114,7 +118,6 @@ module.exports = {
 				components: []
 			}
 
-			const { item, amount } = shop
 			const items = option == 'buy' ?
 			Object.entries( merchant.items ).map( ( [ id, item ] ) => { return {
 				label: item.name,
@@ -137,8 +140,8 @@ module.exports = {
 					title: `Welcome to ${merchant.user.username}'s Shop!`,
 					description: merchant.dialogue[ Math.floor( Math.random() * merchant.dialogue.length ) ],
 					fields: [ {
-						name: item ? item.name + ' $' + item.price * amount : 'None',
-						value: `${amount}`
+						name: text,
+						value: `${shop.amount}`
 					} ],
 					footer: {
 						text: `$${user.coins} Pingu Coins`
